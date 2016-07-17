@@ -13,7 +13,9 @@ import socket
 import locale
 import datetime
 import codecs
-from urllib import urlopen
+import requests
+import shutil
+from urllib import urlopen,urlretrieve
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -78,16 +80,18 @@ def save_to_file(url,filename,blog_address):
         pic_name='image'+i.__str__()+'.gif' 
         if os.path.exists(folder)==False:
             os.makedirs(folder)
-        try:
-            url_file = urlopen(pic[2])
-            pic_file = codecs.open(folder+pic_name,'wb')
-            while True:
-                s = url_file.read(1024)
-                if not s:
-                    break
-                pic_file.write(s)
+        try:   
+            img_result = requests.get(pic[2], stream = True, headers={'User-agent':'Mozilla/5.0'})
+            pic_file = codecs.open(folder + pic_name,'wb')
+            if img_result.status_code == 200:
+                img_result.raw.decode_content = True
+                while True:
+                    s = img_result.raw.read(1024)
+                    if not s:
+                        break
+                    pic_file.write(s)
+                # shutil.copyfileobj(img_result.raw,pic_file)
             pic_file.close()
-            url_file.close()
         except:
             #print '噢，保存图片的时候出现问题了，跳过此张图片...'
             print 'Error in saving photo, skipping this one...'
@@ -195,7 +199,6 @@ if __name__ == '__main__':
                 break
             else:
                 try:
-                    print blog[1]
                     save_to_file(blog[0],unicode(blog[1]),blog_address)
                 except:
                     print 'Error in saving the ',blog_no,'th blog post',blog[1],'Skipping this one'
