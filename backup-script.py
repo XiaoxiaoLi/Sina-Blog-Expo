@@ -23,7 +23,7 @@ sys.setdefaultencoding("utf-8")
 pattern1=u"""<a  href="(http:.*?)">博文目录</a>"""
 prog1 = re.compile(pattern1)
 #匹配博文标题链接
-pattern2=u"""<a title="(.*?)" target="_blank" href="(.*?)">.*?</a>"""
+pattern2=u"""<a title="" target="_blank" href="(.*?)">(.*?)</a>"""
 prog2=re.compile(pattern2)
 #匹配下一页链接
 pattern3=u"""<a href="([^"]+)" title="[^"]+">下一页"""
@@ -195,16 +195,14 @@ if __name__ == '__main__':
                 break
             else:
                 try:
-                    print blog
-                    save_to_file(blog[1],unicode(blog[0]),blog_address)
+                    print blog[1]
+                    save_to_file(blog[0],unicode(blog[1]),blog_address)
                 except:
-                    #print '噢，保存第',blog_no,'篇博文',blog[0],'的时候出现问题了，跳过...'
-                    print 'Error in saving the ',blog_no,'th blog post',blog[0],'Skipping this one'
+                    print 'Error in saving the ',blog_no,'th blog post',blog[1],'Skipping this one'
                     blog_no += 1
                     print "Unexpected error:", sys.exc_info()[0],sys.exc_info()[1]
                 else:
-                    #print '成功保存了第', blog_no, '篇博文:', blog[0]
-                    print 'successfully saved the ', blog_no, 'th blog post:', blog[0]
+                    print 'successfully saved the ', blog_no, 'th blog post:', blog[1]
                     blog_no += 1
                     saved += 1
                     time.sleep(0.4)
